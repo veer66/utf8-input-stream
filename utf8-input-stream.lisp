@@ -1,5 +1,6 @@
 (defpackage #:utf8-input-stream
-  (:use #:cl #:trivial-gray-streams #:zstd))
+  (:use #:cl #:trivial-gray-streams #:zstd)
+  (:export #:make-utf8-input-stream))
 
 (in-package :utf8-input-stream)
 
@@ -26,7 +27,7 @@
   (make-array *line-buffer-size* :fill-pointer t
 				 :element-type '(unsigned-byte 8)))
 
-(defun make-character-input-stream (binary-input-stream)
+(defun make-utf8-input-stream (binary-input-stream)
   (let ((s (make-instance 'character-input-stream))
 	(ctx (make-stream-context)))
     (setf (stream-context-binary-input-stream ctx) binary-input-stream)
