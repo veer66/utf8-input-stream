@@ -1,5 +1,5 @@
 (defpackage #:utf8-input-stream
-  (:use #:cl #:trivial-gray-streams #:zstd)
+  (:use #:cl #:trivial-gray-streams)
   (:export #:make-utf8-input-stream))
 
 (in-package :utf8-input-stream)
