@@ -144,13 +144,23 @@
 (defmethod stream-read-char ((s character-input-stream))
   (read-char-from-buf (ctx s)))
 
+(defun vector-to-string (v)
+  (let* ((len (length v))
+	 (str (make-string len)))
+    (loop for i from 0 below len
+	  do (setf (aref str i) (aref v i)))
+    str))
+
 (defmethod stream-read-line ((s character-input-stream))
   (declare (optimize (speed 3) (debug 0) (safety 0)))
   (let ((ctx (ctx s))
-	(ch-vec (make-array *line-tmp-size* :fill-pointer 0 :element-type 'character)))
-    (loop for ch = (read-char-from-buf ctx)
-	  do (case ch
-	       (:EOF (return (values ch-vec t)))
-	       (#\Newline (return (values ch-vec nil)))
-	       (#\Return nil)
-	       (otherwise (vector-push-extend ch ch-vec))))))
+	(ch-vec (make-array *line-tmp-size* :fill-pointer 0 :element-type 'character)))    
+    (macrolet ((return-val (last?)
+		 `(return (values (vector-to-string ch-vec)
+				  ,last?))))
+      (loop for ch = (read-char-from-buf ctx)
+	    do (case ch
+		 (:EOF (return-val t))
+		 (#\Newline (return-val nil))
+		 (#\Return nil)
+		 (otherwise (vector-push-extend ch ch-vec)))))))
