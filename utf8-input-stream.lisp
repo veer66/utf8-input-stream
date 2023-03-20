@@ -154,7 +154,10 @@
 (defmethod stream-read-line ((s character-input-stream))
   (declare (optimize (speed 3) (debug 0) (safety 0)))
   (let ((ctx (ctx s))
-	(ch-vec (make-array *line-tmp-size* :fill-pointer 0 :element-type 'character)))    
+	(ch-vec (make-array *line-tmp-size*
+			    :fill-pointer 0
+			    :element-type 'character
+			    :adjustable t)))    
     (macrolet ((return-val (last?)
 		 `(return (values (vector-to-string ch-vec)
 				  ,last?))))
