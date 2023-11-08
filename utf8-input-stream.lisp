@@ -144,6 +144,18 @@
 (defmethod stream-read-char ((s character-input-stream))
   (read-char-from-buf (ctx s)))
 
+(defmethod stream-unread-char ((s character-input-stream) ch)
+  (let* ((b0 (char-code ch))
+         (give-back (cond
+                      ((one-byte-ch? b0) 1)
+                      ((two-bytes-ch? b0) 2)
+                      ((three-bytes-ch? b0) 3)
+                      ((four-bytes-ch? b0) 4))))
+    (setf (stream-context-pos (ctx s))
+          (- (stream-context-pos (ctx s)) give-back))
+    (setf (stream-context-buf-pos (ctx s))
+          (- (stream-context-buf-pos (ctx s)) give-back))))
+
 (defun vector-to-string (v)
   (let* ((len (length v))
 	 (str (make-string len)))
