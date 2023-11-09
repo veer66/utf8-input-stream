@@ -14,6 +14,17 @@
                                         (flex:make-external-format :utf-8))))))
      ,@body))
 
-(5am:def-test read-a-single-character-of-a-string ()
+(5am:def-test read-a-single-ascii-character-of-a-string ()
   (with-utf8-input-stream (s "a simple string")
     (5am:is (char-equal (read-char s) #\a))))
+
+(5am:def-test peek-a-single-ascii-character-of-a-string ()
+  (with-utf8-input-stream (s "a simple string")
+    (5am:is (char-equal (peek-char t s) #\a))
+    (5am:is (char-equal (read-char s) #\a))
+    (5am:is (not (char-equal (peek-char t s) #\a)))))
+
+(5am:def-test unread-a-single-ascii-character-of-a-string ()
+  (with-utf8-input-stream (s "a simple string")
+    (unread-char (read-char s) s)
+    (5am:is (char-equal (peek-char t s) #\a))))
