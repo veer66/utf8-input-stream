@@ -40,3 +40,31 @@
   (with-utf8-input-stream (s "été")
     (unread-char (read-char s) s)
     (5am:is (string-equal (string (peek-char t s)) "é"))))
+
+(5am:def-test read-a-single-utf8-wide-character-of-a-string ()
+  (with-utf8-input-stream (s "ก and 𨭎")
+    (5am:is (string-equal (string (read-char s)) "ก"))))
+
+(5am:def-test peek-a-single-utf8-wide-character-of-a-string ()
+  (with-utf8-input-stream (s "ก and 𨭎")
+    (5am:is (string-equal (string (peek-char t s))
+                          (string (read-char s))))))
+
+(5am:def-test unread-a-single-utf8-wide-character-of-a-string ()
+  (with-utf8-input-stream (s "ก and 𨭎")
+    (unread-char (read-char s) s)
+    (5am:is (string-equal (string (peek-char t s)) "ก"))))
+
+(5am:def-test read-a-single-utf8-wide-character-of-a-string2 ()
+  (with-utf8-input-stream (s "𨭎 and ก")
+    (5am:is (string-equal (string (read-char s)) "𨭎"))))
+
+(5am:def-test peek-a-single-utf8-wide-character-of-a-string2 ()
+  (with-utf8-input-stream (s "𨭎 and ก")
+    (5am:is (string-equal (string (peek-char t s))
+                          (string (read-char s))))))
+
+(5am:def-test unread-a-single-utf8-wide-character-of-a-string2 ()
+  (with-utf8-input-stream (s "𨭎 and ก")
+    (unread-char (read-char s) s)
+    (5am:is (string-equal (string (peek-char t s)) "𨭎"))))
