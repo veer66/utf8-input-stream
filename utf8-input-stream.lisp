@@ -123,6 +123,14 @@
 		    (ash (mask-field (byte 6 0) b1) 12)
 		    (ash (mask-field (byte 4 0) b0) 18)))))
 
+(defun char-code-size (b0)
+  (declare (optimize (speed 3) (debug 0) (safety 0)))
+  (cond
+    ((one-byte-ch? b0) 1)
+    ((two-bytes-ch? b0) 2)
+    ((three-bytes-ch? b0) 3)
+    ((four-bytes-ch? b0) 4)))
+
 (defun fetch-ch (ctx)
   (declare (optimize (speed 3) (debug 0) (safety 0)))
   (let ((b0 (read-byte-from-buf ctx)))
@@ -144,17 +152,15 @@
 (defmethod stream-read-char ((s character-input-stream))
   (read-char-from-buf (ctx s)))
 
+
 (defmethod stream-unread-char ((s character-input-stream) ch)
-  (let* ((b0 (char-code ch))
-         (give-back (cond
-                      ((one-byte-ch? b0) 1)
-                      ((two-bytes-ch? b0) 2)
-                      ((three-bytes-ch? b0) 3)
-                      ((four-bytes-ch? b0) 4))))
-    (setf (stream-context-pos (ctx s))
-          (- (stream-context-pos (ctx s)) give-back))
-    (setf (stream-context-buf-pos (ctx s))
-          (- (stream-context-buf-pos (ctx s)) give-back))))
+  (decf (stream-context-pos (ctx s)))
+  (setf (stream-context-buf-pos (ctx s))
+        (let* ((b0 (char-code ch))
+               (size (if (= 1 (char-code-size b0))
+                         (char-code-size b0)
+                         (1- (char-code-size b0)))))
+          (- (stream-context-buf-pos (ctx s)) size))))
 
 (defun vector-to-string (v)
   (let* ((len (length v))
