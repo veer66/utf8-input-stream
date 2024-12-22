@@ -4,7 +4,7 @@
   :description "A UTF-8 string input stream over a binary stream for Common Lisp"
   :author "Vee Satayamas <vsatayamas@gmail.com>"
   :license "MIT"
-  :version "0.0.1"
+  :version "0.0.2"
   :serial t
   :depends-on (#:fiveam
                #:flexi-streams
